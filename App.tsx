@@ -38,7 +38,7 @@ function HomeScreen({ navigation, route }: HomeScreenProps) {
         </Pressable>
       </View>
       <View style={{flex: 2, backgroundColor: 'red'}}>
-        <Text>Second</Text>
+        <Text>Second1</Text>
       </View>
     </>
   );
