@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 import com.android.build.OutputFile
 
 /**
@@ -136,6 +136,7 @@ android {
     defaultConfig {
         applicationId "com.fooddeliveryapp"
         minSdkVersion rootProject.ext.minSdkVersion
+        resValue "string", "build_config_package", "com.fooddeliveryapp"
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"

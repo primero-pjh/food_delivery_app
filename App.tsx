@@ -1,76 +1,35 @@
 import * as React from 'react';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import {Text, TouchableHighlight, View, Pressable} from 'react-native';
-import {useCallback} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import Settings from './src/pages/Settings';
+import Orders from './src/pages/Orders';
+import Delivery from './src/pages/Delivery';
+import {useState} from 'react';
+import SignIn from './src/pages/SignIn';
+import SignUp from './src/pages/SignUp';
+import store from './src/store';
+import { Provider, useSelector } from 'react-redux';
+import { RootState } from './src/store/reducer';
+import AppInner from './AppInner';
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: undefined;
+export type LoggedInParamList = {
+  Orders: undefined;
+  Settings: undefined;
+  Delivery: undefined;
+  Complete: {orderId: string};
 };
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
-type DetailsScreenProps = NativeStackScreenProps<ParamListBase, 'Details'>;
 
-function HomeScreen({ navigation, route }: HomeScreenProps) {
-  const onClick = useCallback(() => {
-    navigation.navigate('Details');
-  }, [navigation]);
+export type RootStackParamList = {
+  SignIn: undefined;
+  SignUp: undefined;
+};
 
-  // flex 는 차지 하는 비율이다. 1과 1이 있으면 50:50, 1과 2가 있으면 33:66
-  // TouchableHighlight는 버튼과 같은 기능이다.
-  // Pressable, TouchableHighlight, TouchableOpcity, TouchableNativeFeedback, Button
-  // 5가지가 버튼과 같은 기능을 한다.
-  // 꺼매지는게 싫으면 underlayColor="" 로 지정한다.
-  // onPress 는 WEB js의 onClick과 같은 기능이다.
-  // 요즘은 Pressable 을 사용한다.
-  // WEB css 는 div에 color를 주면 안에 요소 까지 바뀌지만 RN css는 직접 해줘야 한다.
-  // flexDirection: 'row' 는 가로로 배치를 한다. 이렇게 사용하면 alignItems와 justifyContent의 기능이 서로 뒤바뀌게 된다.
-
-  return (
-    <>
-      <View style={{flex: 1, backgroundColor: 'white', 
-            alignItems: 'center', justifyContent: 'center'}}>
-        <Pressable onPress={onClick} style={{padding: 20, backgroundColor: 'blue'}}>
-          <Text style={{color: 'black'}}>Home Screen</Text>
-        </Pressable>
-      </View>
-      <View style={{flex: 2, backgroundColor: 'red'}}>
-        <Text>Second1</Text>
-      </View>
-    </>
-  );
-}
-
-function DetailsScreen({navigation}: DetailsScreenProps) {
-  const onClick = useCallback(() => {
-    navigation.navigate('Home');
-  }, [navigation]);
-
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <TouchableHighlight onPress={onClick}>
-        <Text>Details Screen</Text>
-      </TouchableHighlight>
-    </View>
-  );
-}
-
-const Stack = createNativeStackNavigator();
 function App() {
+  // const [isLoggedIn, setLoggedIn] = useState(false);
+  
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen}
-          options={{title: '홈화면'}}
-        />
-        <Stack.Screen name="Details">
-          {props => <DetailsScreen {...props} />}
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <AppInner></AppInner>
+    </Provider>
   );
 }
 
