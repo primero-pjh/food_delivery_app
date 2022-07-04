@@ -13,10 +13,13 @@ import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 import userSlice from '../slices/user';
 import { RootStackParamList } from '../../AppInner';
+import { useAppDispatch } from '../store';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, "SignIn">;
 
 function SignIn({navigation} : SignInScreenProps) {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null); // generic
@@ -43,29 +46,28 @@ function SignIn({navigation} : SignInScreenProps) {
         email,
         password
       });
-      console.log(response.data);
+      console.log("response.data:", response.data);
       Alert.alert("알림", "로그인 되었습니다.");
       // redux
       dispatch(
         userSlice.actions.setUser({
-          name: response.data.name,
-          email: response.data.email,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
-        })
-      )
+          name: response.data.data.name,
+          email: response.data.data.email,
+          accessToken: response.data.data.accessToken,
+          // refreshToken: response.data.data.refreshToken,
+        }),
+      );
+      await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
 
     } catch (error) {
-      console.error("error:", error);
-      console.log("Catch");
       // error 는 unknown 이라서 타입을 지정해줘야함
       var errorResponse = (error as AxiosError).response;
-      // Alert.alert("알림", errorResponse.data.message);
+      console.log(errorResponse.data);
       if(errorResponse) {
-        
+        Alert.alert("알림", "에러");
       }
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   }, [email, password]);
 

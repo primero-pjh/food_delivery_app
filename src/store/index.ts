@@ -15,4 +15,5 @@ const store = configureStore({
 export default store;
 
 export type AppDispatch = typeof store.dispatch;
+// 기존함수를 래핑한다
 export const useAppDispatch = () => useDispatch<AppDispatch>();
