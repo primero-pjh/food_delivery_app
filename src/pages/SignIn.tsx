@@ -8,8 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import { NativeStackScreenProps} from "@react-navigation/native-stack";
-import { RootStackParamList } from '../../App';
 import DismissKeyboardView from '../components/DismissKeyboardView';
+import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
+import userSlice from '../slices/user';
+import { RootStackParamList } from '../../AppInner';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, "SignIn">;
 
@@ -18,6 +21,7 @@ function SignIn({navigation} : SignInScreenProps) {
   const [password, setPassword] = useState('');
   const emailRef = useRef<TextInput | null>(null); // generic
   const passwordRef = useRef<TextInput | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const onChangeEmail = useCallback(text => {
     setEmail(text.trim());
@@ -26,14 +30,43 @@ function SignIn({navigation} : SignInScreenProps) {
     setPassword(text.trim());
   }, []);
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     if(!email || !email.trim()) {
       return Alert.alert("알림", "이메일을 입력해주세요.");
     }
     if(!password || !password.trim()) {
       return Alert.alert("알림", "비밀번호를 입력해주세요.");
     }
-    Alert.alert("알림", "로그인 되었습니다.");
+    try {
+      setLoading(true);
+      const response = await axios.post(`${Config.API_URL}/login`, {
+        email,
+        password
+      });
+      console.log(response.data);
+      Alert.alert("알림", "로그인 되었습니다.");
+      // redux
+      dispatch(
+        userSlice.actions.setUser({
+          name: response.data.name,
+          email: response.data.email,
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        })
+      )
+
+    } catch (error) {
+      console.error("error:", error);
+      console.log("Catch");
+      // error 는 unknown 이라서 타입을 지정해줘야함
+      var errorResponse = (error as AxiosError).response;
+      // Alert.alert("알림", errorResponse.data.message);
+      if(errorResponse) {
+        
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [email, password]);
 
   const toSignUp = useCallback(() => {

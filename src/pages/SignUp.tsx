@@ -11,10 +11,16 @@ import {
   View,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../App';
 import DismissKeyboardView from '../components/DismissKeyboardView';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
+// import { AsyncStorage } from "react-native"; => 암호화 되지 않음
+// redux에 넣은 데이터는 앱을 끄면 날아감
+// 앱을 꺼도 저장되어야 하고 민감한 값은 encrypted-storage에
+// 개발 환경별로 달라지는 값은 react-native-config에 저장하면 좋음(암호화 안 됨)
+// 그 외에 유지만 되면 데이터들은 async-storage에 저장(npm install @react-native-async-storage/async-storage)
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { RootStackParamList } from '../../AppInner';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
@@ -71,20 +77,20 @@ function SignUp({navigation}: SignUpScreenProps) {
           name, 
           password,
       });
-      console.log("reponse", response);
       Alert.alert("알림", "회원가입 되었습니다.");
+      navigation.navigate('SignIn');
     } catch (error) {
+      console.error("error:", error);
       console.log("Catch");
       // error 는 unknown 이라서 타입을 지정해줘야함
       var errorResponse = (error as AxiosError).response;
-      Alert.alert("알림", "에러");
       if(errorResponse) {
-        
+        Alert.alert("알림", errorResponse.data.message); 
       }
     } finally {
       setLoading(false);
     }
-  }, [loading, email, name, password]);
+  }, [navigation, loading, email, name, password]);
 
   const canGoNext = email && name && password;
   return (
