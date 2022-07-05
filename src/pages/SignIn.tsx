@@ -54,13 +54,15 @@ function SignIn({navigation} : SignInScreenProps) {
           name: response.data.data.name,
           email: response.data.data.email,
           accessToken: response.data.data.accessToken,
+          // # refreshToken은 redux가 아닌 encryptedStorage에 저장한다.
+          // # server에 요청할 땐 accessToken을 전송한다.
           // refreshToken: response.data.data.refreshToken,
         }),
       );
       await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken);
 
     } catch (error) {
-      // error 는 unknown 이라서 타입을 지정해줘야함
+      // # error 는 unknown 이라서 타입을 지정해줘야함
       var errorResponse = (error as AxiosError).response;
       console.log(errorResponse.data);
       if(errorResponse) {
@@ -75,8 +77,8 @@ function SignIn({navigation} : SignInScreenProps) {
     navigation.navigate('SignUp');
   }, [navigation]);
 
-  // 최대한 변수명으로 깔끔하게 만들어라
-  const canGoNext = email && password;   // email과 password가 null이 아니라면 진행
+  // # 최대한 변수명은 다음에 봤을 때도 의미를 알 수 있도록 만들어라 
+  const canGoNext = email && password;   // # email과 password가 null, Empty이 아니라면 진행
   return (
     <DismissKeyboardView>
       <View  style={styles.inputWrapper}>
