@@ -17,6 +17,7 @@ import Config from 'react-native-config';
 import { useAppDispatch } from './src/store';
 import userSlice from './src/slices/user';
 import { Alert } from 'react-native';
+import orderSlice from './src/slices/order';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -40,8 +41,33 @@ function AppInner() {
   const [socket, disconnect] = useSocket();
 
   useEffect(() => {
+    axios.interceptors.response.use(response => {
+      // console.log("reponse:", response);
+      return response;
+    }, async (error) => {
+      const {config, response: { status }} = error;//구조분해
+      const originRequest = config;
+      if(error.status == 419) {
+        if(error.response.data.code === 'expired') {
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          const {data} = await axios.post(`${Config.API_URL}/refreshToken`, 
+          {}, {
+            headers: {authorization: `Bearer ${refreshToken}`}
+          });
+          dispatch(userSlice.actions.setAccessToekn(data.data.accessToken));
+          originRequest.headers.authorization = `Bearer ${data.data.accessToken}`;
+          return axios(originRequest);
+        }
+      } else {
+        return Promise.reject(error);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     const callback = (data: any) => {
       console.log("data:", data);
+      dispatch(orderSlice.actions.addOrder(data));
     };
     if (socket && isLoggedIn) {
       socket.emit('acceptOrder', 'hello');
@@ -52,7 +78,7 @@ function AppInner() {
         socket.off('order', callback);
       }
     };
-  }, [isLoggedIn, socket]);
+  }, [dispatch, isLoggedIn, socket]);
 
   useEffect(() => {
     if (!isLoggedIn) {
