@@ -12,16 +12,21 @@ export interface Order {
     longitude: number;
   };
   price: number;
+  image?: string;
+  rider?: string;
+  completedAt: string;
 }
 
 interface InitialState {
   orders: Order[],
   deliveries: Order[],
+  completes: Order[],
 }
 const initialState: InitialState = {
   // 빈 배열이면 type 에러가 난다.
   orders: [],
   deliveries: [],
+  completes: [],
 };
 
 const orderSlice = createSlice({
@@ -50,6 +55,9 @@ const orderSlice = createSlice({
       if(index > -1) {
         state.deliveries.splice(index, 1);
       }
+    },
+    setCompletes(state, action) {
+      state.completes = action.payload;
     },
   },
   extraReducers: builder => {},

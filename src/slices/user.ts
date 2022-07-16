@@ -13,6 +13,7 @@ const initialState = {
   accessToken: '',
   money: 0,
   // refreshToken: '',
+  phoneToken: '',
 };
 const userSlice = createSlice({
   name: 'user',
@@ -25,6 +26,7 @@ const userSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.money = action.payload.money;
       // state.refreshToken = action.payload.refreshToken;
+
     },
     setName(state, action) {
       state.name = action.payload;
@@ -35,7 +37,10 @@ const userSlice = createSlice({
     setMoney(state, action: PayloadAction<number>) {
       state.money = action.payload;
     },
-    setAccessToekn(state, action: PayloadAction<string>) {
+    setAccessToken(state, action: PayloadAction<string>) {
+      state.accessToken = action.payload;
+    },
+    setPhoneToken(state, action) {
       state.accessToken = action.payload;
     },
   },
