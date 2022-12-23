@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {NavigationContainer, ParamListBase} from '@react-navigation/native';
-import {
+import {1
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
